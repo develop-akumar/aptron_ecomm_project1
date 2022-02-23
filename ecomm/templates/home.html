@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load cart %}
+{% block title %}Home{% endblock title %}
+
+
+
+{% block content %}
+<script src = " {% static 'js/script.js' %} "></script>
+{% comment %} <Script>
+  if (window.history.replaceState){
+      window.history.replaceState(null, null , window.location.href);
+      
+      }
+  
+</Script> {% endcomment %}
+
+{% if errormsg %}
+
+<div class="modal" tabindex="-1" style="display:block;" >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Modal title</h5>
+
+
+        <form action="{% url 'home' %}">
+          <button type="submit" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </form>
+
+        </div>
+        <div class="modal-body">
+          <p> {{errormsg}} </p>
+        </div>
+
+
+      <form action="{% url 'home' %}">
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          {% comment %} <button type="button" class="btn btn-primary">Save changes</button> {% endcomment %}
+        </form>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+ 
+{% endif %}
+
+
+
+
+
+
+
+<div class="container" >
+  <div class="row mx-auto" >
+
+    <div class="col-lg-3" >
+
+      {% comment %} --------list group---------- {% endcomment %}
+
+      
+          <div class="list-group">
+
+            {% comment %}------------category for loop ---------------{% endcomment %}
+
+            {% comment %} <a href="#" class="list-group-item list-group-item-action active" aria-current="true">
+              Category List
+              </a>
+
+              {% for category in cat  %}
+                 <a href="/?id={{category.id}}" class="list-group-item list-group-item-action" aria-current="true">
+                 {{category.name}}
+                 </a>     
+              {% endfor %}    {% endcomment %}
+
+
+              <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                  Dropdown button
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                  <li>{% for category in cat  %}
+                    <a href="/?id={{category.id}}" class="list-group-item list-group-item-action" aria-current="true">
+                    {{category.name}}
+                    </a>     
+                 {% endfor %}</li>
+                  
+                </ul>
+              </div>
+
+          </div> 
+    
+    </div>
+    
+    
+{% comment %} -------------image card------------------ {% endcomment %}
+    <div class="col-lg-9" >
+      <div class="row mx-auto">
+
+
+          {% for img in path %}
+          
+            <div class="card mx-auto my-3" style="width: 25rem;">
+              <img src="{{img.image.url}}" class="card-img-top" alt="..." >
+              <div class="card-body">
+                <h5 class="card-title">Name : {{img.name}} </h5>
+                
+                <h5 class="card-text">Price : Rs.{{img.price}} </h5>
+                <h5 class="card-title">Desc : {{img.description}} </h5>
+                <h5 class="card-title">Category : {{img.category}} </h5>
+                
+
+                {% comment %} -------- Add to Cart ---------- {% endcomment %}
+                <div class="card-footer row no-gutter">
+
+                  {% if img|isexistincart:request.session.cart %}
+                  
+                  <div class="row">
+                      <form action="#{{img.id}}" method='post' class = "col-2">
+                        {% csrf_token %}
+                          <input type="text" name="cartid" value={{img.id}} hidden>
+                          <input type="text" name="minus" value="True" hidden>
+                          <input type='submit' value = "-" class="btn btn-block btn-primary">
+                      </form>
+                      <div class="text-center col">
+                        {{img|cartquantity:request.session.cart}}
+                      </div>
+                      <form action="#{{img.id}}" method='post' class = "col-2">
+                        {% csrf_token %}
+                          <input type="text" name="cartid" value={{img.id}} hidden>
+                          <input type='submit' value = "+" class="btn btn-block btn-primary">
+                      </form>
+                  </div>
+                  {% else %}
+                  <form action="#{{img.id}}" method='post' class = "btn-block">
+                    {% csrf_token %}
+                      <input type="text" name="cartid" value={{img.id}} hidden>
+
+                    <button type='submit' class="btn btn-primary btn-block form-control">Add to Cart</button>
+                  </form>
+
+                {% endif %}
+
+                </div>
+                {% comment %} ```````` End Add to Cart ```````` {% endcomment %}
+
+
+                
+              </div>
+            </div>
+
+              {% comment %} <img src="{{img.image.url}}" alt="image not available" width=500 height=500> {% endcomment %}
+
+          {% endfor %}
+        </div>
+
+        </div>
+{% comment %} -------------end image card------------------ {% endcomment %}
+
+
+  </div>
+
+</div>
+
+{% endblock content %}
+
+
+
+
+
